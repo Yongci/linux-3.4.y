@@ -38,16 +38,20 @@ trap "rm -f $tmp" 0 1 2 3 15
 
 # Check if we can link to ncurses
 check() {
-        $cc -x c - -o $tmp 2>/dev/null <<'EOF'
+        $cc -DLOCALE -x c - -o $tmp -lncurses -ltinfo 2>/dev/null <<'EOF'
 #include CURSES_LOC
-main() {}
+int main(void) {
+initscr();
+endwin();
+return 0;
+}
 EOF
 	if [ $? != 0 ]; then
 	    echo " *** Unable to find the ncurses libraries or the"       1>&2
 	    echo " *** required header files."                            1>&2
 	    echo " *** 'make menuconfig' requires the ncurses libraries." 1>&2
 	    echo " *** "                                                  1>&2
-	    echo " *** Install ncurses (ncurses-devel) and try again."    1>&2
+	    echo " *** Install ncurses (ncurses-devel or libncurses-dev) and try again."    1>&2
 	    echo " *** "                                                  1>&2
 	    exit 1
 	fi
